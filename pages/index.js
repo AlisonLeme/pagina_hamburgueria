@@ -1,224 +1,246 @@
-import { Box, Button, Container, Select, TextField, Typography, Grid  } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
+import { useState } from 'react';
+import { Formik } from 'formik';
+
+import { 
+  Box,
+  Button,
+  Container,
+  Select,
+  TextField,
+  Typography,
+  Grid,
+  FormGroup,
+  FormControlLabel,
+  Checkbox,
+  RadioGroup,
+  Radio,
+  OutlinedInput,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  FormHelperText,
+  MenuItem
+} from '@material-ui/core'
 
 import TemplateDefault from '../src/templates/Default'
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: theme.spacing(8, 0, 6),
-  },
-  boxContainer: {
-      paddingBottom: theme.spacing(5),
-  },
-  box1: {
-      backgroundColor: theme.palette.background.grey,
-      padding: theme.spacing(3),
-      marginBottom: theme.spacing(5),
-      boxShadow: '5px 0px 20px #ac0d0d',
-      borderRadius: '5px 5px 5px 100px',
-  },
-  box2: {
-      backgroundColor: theme.palette.background.grey,
-      padding: theme.spacing(3),
-      marginBottom: theme.spacing(5),
-      boxShadow: '-5px 0 20px #ac0d0d',
-      borderRadius: '5px 5px 100px 5px',
-  },
-  title: {
-    color: theme.palette.title.main,
-  },
-  btn: {
-    backgroundColor: '#ac0d0d',
-    color: theme.palette.title.main,
-    fontWeight: 'bold',
-    transition: '.3s',
-
-    '&:hover': {
-      backgroundColor: theme.palette.title.main,
-      color: '#ac0d0d',
-    },
-  },
-}))
+import { initialValues, validationSchema } from './formValues';
+import useStyles from './styles';
 
 export default function Home() {
   const classes = useStyles();
 
+  const [state, setState] = useState({
+    gilad: true,
+    jason: false,
+    antoine: false,
+  });
+
+  const [value, setValue] = useState('female');
+
+  const handleChangeCheck = (event) => {
+    setState({ ...state, [event.target.name]: event.target.checked });
+  };
+
+  const handleChangeRadio = (event) => {
+    setValue(event.target.value);
+  }
+
+  const { gilad, jason, antoine } = state;
+  const error = [gilad, jason, antoine].filter((v) => v).length !== 2;
+
   return (
     <TemplateDefault>
-      <Container maxWidth="md" className={classes.container}>
-        <Grid container spacing={3} className={classes.boxContainer}>
-          <Grid item md={12}>
-            <Typography component="h1" variant="h2" align="center" gutterBottom className={classes.title}>
-                Faça o pedido
-            </Typography>
-          </Grid>
-        </Grid>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={(values) => {
+          console.log('ok, enviou o formulário');
+        }}
+      >
+        {
+          ({
+            touched,
+            values,
+            errors,
+            handleChange,
+            handleSubmit,
+            setFieldValue,
+          }) => {
+            return (
+              <form onSubmit={handleSubmit}>
+                <Container maxWidth="md" className={classes.container}>
+                  <Grid container spacing={3} className={classes.boxContainer}>
+                    <Grid item md={12}>
+                      <Typography component="h1" variant="h2" align="center" gutterBottom className={classes.title}>
+                          Faça o pedido
+                      </Typography>
+                    </Grid>
+                  </Grid>
 
-        <Box className={classes.box1}>
-          <Grid container spacing={3} className={classes.boxContainer}>
-            <Grid item xs={12} sm={6}>
-                <Typography component="h6" variant="h6">
-                    Telefone
-                </Typography>
-                <TextField
-                    label="ex.: 15999999999"
-                    size="small"
-                    fullWidth={true}
-                />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-                  <Typography component="h6" variant="h6">
-                      Nome do Cliente
-                  </Typography>
-                  <TextField
-                    label="ex.: Alison Leme"
-                    size="small"
-                    fullWidth={true}
-                />
-            </Grid>
-          </Grid>
+                  <Box className={classes.box1}>
+                    <Grid container spacing={3} className={classes.boxContainer}>
+                      <Grid item xs={12} sm={6}>
+                        <Typography component="h6" variant="h6" gutterBottom>
+                          Telefone
+                        </Typography>
+                        <FormControl fullWidth variant='outlined' error={errors.telefone && touched.telefone}>
+                          <InputLabel>
+                            Ex..: 15998532204
+                          </InputLabel>
+                          <OutlinedInput
+                            name='telefone'
+                            value={values.telefone}
+                            onChange={handleChange}
+                            label='Ex..: 15998532204'
+                          >
+                          </OutlinedInput>
+                          <FormHelperText>
+                            { errors.telefone && touched.telefone ? errors.telefone : null }
+                          </FormHelperText>
+                        </FormControl>
+                      </Grid>
+                      
+                      <Grid item xs={12} sm={6}>
+                        <Typography component="h6" variant="h6" gutterBottom>
+                            Nome do Cliente
+                        </Typography>
+                        <FormControl fullWidth variant='outlined' error={errors.nome && touched.nome}>
+                          <InputLabel>
+                            Ex..: Alison Leme
+                          </InputLabel>
+                          <OutlinedInput
+                            name='nome'
+                            value={values.nome}
+                            onChange={handleChange}
+                            label='Ex..: Alison Leme'
+                          >
+                          </OutlinedInput>
+                          <FormHelperText>
+                            { errors.nome && touched.nome ? errors.nome : null }
+                          </FormHelperText>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
 
-          <Grid container spacing={3} className={classes.boxContainer}>
-            <Grid item xs={12} sm={6}>
-              <Typography component="h6" variant="h6">
-                  Combos
-              </Typography>
-              <Select
-                  className={classes.select}
-                  native
-                  value=""
-                  fullWidth
-                  onChange={() => {}}
-                  background="primary"
-                  inputProps={{
-                      name: 'age',
-                  }}
-              >
-                  <option value="">Selecione</option>
-                  <option value="1">Bebê e Crianças</option>
-                  <option value="2">Agricultura</option>
-                  <option value="3">Moda</option>
-                  <option value="3">Carros, Motos e Barcos</option>
-                  <option value="3">Serviços</option>
-                  <option value="3">Lazer</option>
-                  <option value="3">Animais</option>
-                  <option value="3">Móveis, Casa e Jardim</option>
-                  <option value="3">Imóveis</option>
-                  <option value="3">Equipamentos e Ferramentas</option>
-                  <option value="3">Celulares e Tablets</option>
-                  <option value="3">Esporte</option>
-                  <option value="3">Tecnologia</option>
-                  <option value="3">Emprego</option>
-                  <option value="3">Outros</option>
-              </Select>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography component="h6" variant="h6">
-                  Adicionais
-              </Typography>
-              <Select
-                  className={classes.select}
-                  native
-                  value=""
-                  fullWidth
-                  onChange={() => {}}
-                  background="primary"
-                  inputProps={{
-                      name: 'age',
-                  }}
-              >
-                  <option value="">Selecione</option>
-                  <option value="1">Bebê e Crianças</option>
-                  <option value="2">Agricultura</option>
-                  <option value="3">Moda</option>
-                  <option value="3">Carros, Motos e Barcos</option>
-                  <option value="3">Serviços</option>
-                  <option value="3">Lazer</option>
-                  <option value="3">Animais</option>
-                  <option value="3">Móveis, Casa e Jardim</option>
-                  <option value="3">Imóveis</option>
-                  <option value="3">Equipamentos e Ferramentas</option>
-                  <option value="3">Celulares e Tablets</option>
-                  <option value="3">Esporte</option>
-                  <option value="3">Tecnologia</option>
-                  <option value="3">Emprego</option>
-                  <option value="3">Outros</option>
-              </Select>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Typography component="h6" variant="h6">
-                  Entrega ?
-              </Typography>
-              <Select
-                  className={classes.select}
-                  native
-                  value=""
-                  fullWidth
-                  onChange={() => {}}
-                  background="primary"
-                  inputProps={{
-                      name: 'age',
-                  }}
-              >
-                  <option value="">Selecione</option>
-                  <option value="1">Para Viagem</option>
-                  <option value="2">Comer no local</option>
-              </Select>
-            </Grid>
-          </Grid>
+                    <Grid container spacing={3} className={classes.boxContainer}>
+                      <Grid item xs={12} sm={6}>
+                        <Typography component="h6" variant="h6">
+                            Combos
+                        </Typography>
+                        <FormControl fullWidth variant='outlined' error={errors.combo && touched.combo}>
+                          <InputLabel>
+                            Escolha o combo
+                          </InputLabel>
+                          <Select
+                            name='combo'
+                            value={values.combo}
+                            onChange={handleChange}
+                            className={classes.select}
+                            label='Escolha o combo'
+                            fullWidth
+                          >
+                            <MenuItem value="X SAUDAVEL">X SAUDAVEL</MenuItem>
+                            <MenuItem value="X EGG">X EGG</MenuItem>
+                            <MenuItem value="X BURGUER">X BURGUER</MenuItem>
+                          </Select>
+                          <FormHelperText>
+                            { errors.combo && touched.combo ? errors.combo : null }
+                          </FormHelperText>
+                        </FormControl>
+                      </Grid>
 
-          <Grid container spacing={3} align='center' className={classes.boxContainer}>
-            <Grid item md={4}>
-              <Button variant="contained" className={classes.btn}>
-                  Calcular
-              </Button>
-            </Grid>
-            <Grid item md={4}>
-              <Button variant="contained" className={classes.btn}>
-                  Novo Pedido
-              </Button>
-            </Grid>
-            <Grid item md={4}>
-              <Button variant="contained" className={classes.btn}>
-                  Recibo
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
+                      <Grid item xs={6} sm={3}>
+                        <Typography component="h6" variant="h6">
+                            Adicionais
+                        </Typography>
+                        <FormGroup>
+                          <FormControlLabel
+                            control={<Checkbox checked={gilad} onChange={handleChangeCheck} name="gilad" />}
+                            label="Gilad Gray"
+                          />
+                          <FormControlLabel
+                            control={<Checkbox checked={jason} onChange={handleChangeCheck} name="jason" />}
+                            label="Jason Killian"
+                          />
+                          <FormControlLabel
+                            control={<Checkbox checked={antoine} onChange={handleChangeCheck} name="antoine" />}
+                            label="Antoine Llorca"
+                          />
+                      </FormGroup>
+                      </Grid>
+                      
+                      <Grid item xs={6} sm={3}>
+                        <Typography component="h6" variant="h6">
+                            Entrega ?
+                        </Typography>
+                        <RadioGroup aria-label="gender" name="gender1" value={value} onChange={handleChangeRadio}>
+                          <FormControlLabel value="Para viagem" control={<Radio />} label="Para viagem" />
+                          <FormControlLabel value="Balcão" control={<Radio />} label="Balcão" />
+                        </RadioGroup>
+                      </Grid>
+                    </Grid>
 
-        <Box className={classes.box2}>
-          <Grid container spacing={3} className={classes.boxContainer}>
-            <Grid item xs={12}>
-              <Typography component="h6" variant="h6" gutterBottom color="primary">
-                  Total a pagar:
-              </Typography>
-              <TextField
-                  multiline
-                  rows={1}
-                  variant="outlined"
-                  fullWidth
-              />
-            </Grid>
-          </Grid>
+                    <Grid container spacing={3} align='center' className={classes.boxContainer}>
+                      <Grid item md={4}>
+                        <Button variant="contained" className={classes.btn}>
+                            Calcular
+                        </Button>
+                      </Grid>
+                      <Grid item md={4}>
+                        <Button variant="contained" className={classes.btn}>
+                            Novo Pedido
+                        </Button>
+                      </Grid>
+                      <Grid item md={4}>
+                        <Button variant="contained" className={classes.btn}>
+                            Recibo
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </Box>
 
-          <Grid container spacing={3} className={classes.boxContainer}>
-            <Grid item xs={12}>
-              <Typography component="h6" variant="h6" gutterBottom>
-                    Descrição do Pedido
-                </Typography>
-                <Typography component="div" variant="body2">
-                    Escreva os detalhes do que está vendendo.
-                </Typography>
-                <TextField
-                    multiline
-                    rows={6}
-                    variant="outlined"
-                    fullWidth
-                />
-            </Grid>
-          </Grid>
-        </Box>
-      </Container>
+                  <Box className={classes.box2}>
+                    <Grid container spacing={3} className={classes.boxContainer}>
+                      <Grid item xs={12}>
+                        <Typography component="h6" variant="h6" gutterBottom color="primary">
+                            Total a pagar:
+                        </Typography>
+                        <OutlinedInput 
+                          onChange={() => {}}
+                          startAdornment={<InputAdornment position="start">R$</InputAdornment>}
+                          fullWidth
+                          disabled
+                        />
+                      </Grid>
+                    </Grid>
+
+                    <Grid container spacing={3} className={classes.boxContainer}>
+                      <Grid item xs={12}>
+                        <Typography component="h6" variant="h6" gutterBottom>
+                              Descrição do Pedido
+                          </Typography>
+                          <Typography component="div" variant="body2">
+                              Detalhes do pedido
+                          </Typography>
+                          <TextField
+                              multiline
+                              rows={6}
+                              variant="outlined"
+                              fullWidth
+                              disabled
+                          />
+                      </Grid>
+                    </Grid>
+                  </Box>
+                </Container>
+              </form>
+            )
+          }
+        }
+      </Formik>
+
+
+
     </TemplateDefault>
   )
 }
